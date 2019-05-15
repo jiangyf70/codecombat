@@ -47,6 +47,7 @@ CourseVictoryModal = require './modal/CourseVictoryModal'
 PicoCTFVictoryModal = require './modal/PicoCTFVictoryModal'
 HoC2018VictoryModal = require 'views/special_event/HoC2018VictoryModal'
 InfiniteLoopModal = require './modal/InfiniteLoopModal'
+CapstoneProgressModal = require './modal/CapstoneProgressModal'
 LevelSetupManager = require 'lib/LevelSetupManager'
 ContactModal = require 'views/core/ContactModal'
 HintsView = require './HintsView'
@@ -668,6 +669,11 @@ module.exports = class PlayLevelView extends RootView
       ModalClass = CourseVictoryModal
       options.courseInstanceID = utils.getQueryVariable('course-instance') or utils.getQueryVariable('league')
     ModalClass = PicoCTFVictoryModal if window.serverConfig.picoCTF
+
+    if @level.isType('capstone')
+      ModalClass = CapstoneProgressModal
+      window.nextURL = 'todo: cinematic location'
+
     if @level.get("slug") is "code-play-share" and @level.get('shareable')
       hocModal = new HoC2018VictoryModal({
         shareURL: "#{window.location.origin}/play/#{@level.get('type')}-level/#{@session.id}",
