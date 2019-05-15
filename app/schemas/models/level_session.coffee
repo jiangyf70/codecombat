@@ -340,8 +340,10 @@ _.extend LevelSessionSchema.properties,
     title: 'Key Value DB'
     description: 'Simplified key-value database for game-dev levels'
 
-  stage:
+  capstoneStage:
     type: 'number'
+    title: 'Capstone Stage'
+    description: 'Current capstone stage of the level'
 
 LevelSessionSchema.properties.leagues.items.properties.stats.properties = _.pick LevelSessionSchema.properties, 'meanStrength', 'standardDeviation', 'totalScore', 'numberOfWinsAndTies', 'numberOfLosses', 'scoreHistory', 'matches'
 
