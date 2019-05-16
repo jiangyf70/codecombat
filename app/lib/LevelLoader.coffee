@@ -207,12 +207,6 @@ module.exports = class LevelLoader extends CocoClass
       code[if session.get('team') is 'humans' then 'hero-placeholder' else 'hero-placeholder-1'].plan = uncompressed
       session.set 'code', code
       session.unset 'interpret'
-
-    stage = session.get('stage')
-    if stage
-      console.log('found stage on session: ', state)
-      # TODO: load in interactive choices
-
     if session.get('codeLanguage') in ['io', 'clojure']
       session.set 'codeLanguage', 'python'
     if session is @session
