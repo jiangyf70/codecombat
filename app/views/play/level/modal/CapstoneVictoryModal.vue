@@ -1,14 +1,15 @@
 <template>
   <div>
-    <h1>All done! Much victory, very celebration!</h1>
+    <h1>Nice work!</h1>
     For level session: {{this.courseInstanceID}},
     stage: [{{this.capstoneStage}}/{{this.capstoneStages}}]
+    Next cinematic link: TODO :)
   </div>
 </template>
 
 <script>
   export default {
-    name: 'CapstoneProgressModal',
+    name: 'CapstoneVictoryModal',
     props: {
       courseInstanceID: {
         type: String,

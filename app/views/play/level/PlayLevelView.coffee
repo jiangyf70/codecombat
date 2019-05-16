@@ -48,6 +48,7 @@ PicoCTFVictoryModal = require './modal/PicoCTFVictoryModal'
 HoC2018VictoryModal = require 'views/special_event/HoC2018VictoryModal'
 InfiniteLoopModal = require './modal/InfiniteLoopModal'
 CapstoneProgressModal = require './modal/CapstoneProgressModal'
+CapstoneVictoryModal = require './modal/CapstoneVictoryModal'
 LevelSetupManager = require 'lib/LevelSetupManager'
 ContactModal = require 'views/core/ContactModal'
 HintsView = require './HintsView'
@@ -658,7 +659,8 @@ module.exports = class PlayLevelView extends RootView
 
   showVictory: (options={}) ->
     return if @level.hasLocalChanges()  # Don't award achievements when beating level changed in level editor
-    return if @level.isType('game-dev') and @level.get('shareable') and not options.manual
+    capstoneStages = @level.get('capstoneStages')
+    return if @level.isType('game-dev') and @level.get('shareable') and not options.manual and not capstoneStages
     return if @showVictoryHandlingInProgress
     @showVictoryHandlingInProgress=true
     @endHighlight()
@@ -670,9 +672,21 @@ module.exports = class PlayLevelView extends RootView
       options.courseInstanceID = utils.getQueryVariable('course-instance') or utils.getQueryVariable('league')
     ModalClass = PicoCTFVictoryModal if window.serverConfig.picoCTF
 
-    if @level.isType('capstone')
-      ModalClass = CapstoneProgressModal
-      window.nextURL = 'todo: cinematic location'
+    # Handle capstone progression through the stages
+    if @level.isType('game-dev') and capstoneStages
+      state = @session.get('state') ? {}
+      if not state.capstoneStage
+        state.capstoneStage = 1 # Increase from zero
+      else
+        state.capstoneStage += 1
+      @session.set('state', state)
+      @session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
+      options.capstoneStage = state.capstoneStage
+      options.capstoneStages = capstoneStages
+      if state.capstoneStage < capstoneStages
+        ModalClass = CapstoneProgressModal
+      else
+        ModalClass = CapstoneVictoryModal
 
     if @level.get("slug") is "code-play-share" and @level.get('shareable')
       hocModal = new HoC2018VictoryModal({
@@ -814,8 +828,12 @@ module.exports = class PlayLevelView extends RootView
     return if @destroyed
     Backbone.Mediator.publish 'level:set-time', ratio: 1
     return if @level.hasLocalChanges()  # Don't award achievements when beating level changed in level editor
+    state = @session.get('state') ? {}
+    options = { showModal: true }
+    if not _.isUndefined(state.capstoneStage) and state.capstoneStage >= @level.capstoneStages
+      options.capstoneVictory = true
     if @goalManager.checkOverallStatus() is 'success'
-      showModalFn = -> Backbone.Mediator.publish 'level:show-victory', showModal: true
+      showModalFn = -> Backbone.Mediator.publish 'level:show-victory', options
       @session.recordScores @world.scores, @level
       if @level.get 'replayable'
         @session.increaseDifficulty showModalFn
