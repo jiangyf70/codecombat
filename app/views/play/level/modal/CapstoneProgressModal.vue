@@ -2,7 +2,10 @@
   <div>
     <h1>All done! Much victory, very celebration!</h1>
     For level session: {{this.courseInstanceID}},
-    stage: [{{this.capstoneStage}}/{{this.capstoneStages}}]
+    stage: {{this.capstoneStage}},
+    remaining goals: {{this.remainingGoals}}
+    <br />
+    Next cinematic link: TODO :)
   </div>
 </template>
 
@@ -18,8 +21,8 @@
         type: Number,
         required: true
       },
-      capstoneStages: {
-        type: Number,
+      remainingGoals: {
+        type: Array,
         required: true
       }
     }

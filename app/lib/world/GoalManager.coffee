@@ -61,6 +61,8 @@ module.exports = class GoalManager extends CocoClass
   # world generator gets current goals from the main instance
   getGoals: -> @goals
 
+  getRemainingGoals: -> _.filter(@goalStates, (state) -> state.status != 'success')
+
   # background instance created by world generator,
   # gets these goals and code, and is told to be all ears during world gen
   setGoals: (@goals) ->
@@ -95,6 +97,32 @@ module.exports = class GoalManager extends CocoClass
       continue unless @goalStates[goalID]?
       @goalStates[goalID] = goalState
     @notifyGoalChanges()
+
+  # Returns the current capstoneStage
+  addAdditionalGoals: (session, additionalGoals) ->
+    state = session.get('state') ? {}
+    if not state.capstoneStage
+      state.capstoneStage = 1 # Increase from zero
+    else
+      state.capstoneStage += 1
+    session.set('state', state)
+    session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
+    _.forEach(additionalGoals, (stageGoals) =>
+      if stageGoals.stage == state.capstoneStage
+        _.forEach(stageGoals.goals, (goal) =>
+          @addGoal(goal)
+        )
+    )
+    return state.capstoneStage
+
+  # Checks if the overall goal status is 'success', then progresses
+  # capstone goals to the next stage if there are more goals
+  finishLevel: ->
+    stageFinished = @goalManager.checkOverallStatus() is 'success'
+    if @options.additionalGoals
+      @addAdditionalGoals(@options.session, @options.additionalGoals)
+
+    return stageFinished
 
   # IMPLEMENTATION DETAILS
 

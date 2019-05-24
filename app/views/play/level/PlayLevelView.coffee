@@ -335,7 +335,10 @@ module.exports = class PlayLevelView extends RootView
     @team = team
 
   initGoalManager: ->
-    options = {}
+    options = {
+      additionalGoals: @level.get('additionalGoals')
+      session: @session
+    }
     if @level.get('assessment') is 'cumulative'
       options.minGoalsToComplete = 1
     @goalManager = new GoalManager(@world, @level.get('goals'), @team, options)
@@ -659,10 +662,10 @@ module.exports = class PlayLevelView extends RootView
 
   showVictory: (options={}) ->
     return if @level.hasLocalChanges()  # Don't award achievements when beating level changed in level editor
-    capstoneStages = @level.get('capstoneStages')
-    return if @level.isType('game-dev') and @level.get('shareable') and not options.manual and not capstoneStages
+    additionalGoals = @level.get('additionalGoals')
+    return if @level.isType('game-dev') and @level.get('shareable') and not options.manual and not additionalGoals
     return if @showVictoryHandlingInProgress
-    @showVictoryHandlingInProgress=true
+    @showVictoryHandlingInProgress = true
     @endHighlight()
     options = {level: @level, supermodel: @supermodel, session: @session, hasReceivedMemoryWarning: @hasReceivedMemoryWarning, courseID: @courseID, courseInstanceID: @courseInstanceID, world: @world, parent: @}
     ModalClass = if @level.isType('hero', 'hero-ladder', 'hero-coop', 'course', 'course-ladder', 'game-dev', 'web-dev') then HeroVictoryModal else VictoryModal
@@ -672,18 +675,11 @@ module.exports = class PlayLevelView extends RootView
       options.courseInstanceID = utils.getQueryVariable('course-instance') or utils.getQueryVariable('league')
     ModalClass = PicoCTFVictoryModal if window.serverConfig.picoCTF
 
-    # Handle capstone progression through the stages
-    if @level.isType('game-dev') and capstoneStages
-      state = @session.get('state') ? {}
-      if not state.capstoneStage
-        state.capstoneStage = 1 # Increase from zero
-      else
-        state.capstoneStage += 1
-      @session.set('state', state)
-      @session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
-      options.capstoneStage = state.capstoneStage
-      options.capstoneStages = capstoneStages
-      if state.capstoneStage < capstoneStages
+    # Progress through the capstone stages
+    if additionalGoals
+      options.capstoneStage = @session.capstoneStage
+      options.remainingGoals = @goalManager.getRemainingGoals()
+      if options.remainingGoals.length > 0
         ModalClass = CapstoneProgressModal
       else
         ModalClass = CapstoneVictoryModal
@@ -830,9 +826,9 @@ module.exports = class PlayLevelView extends RootView
     return if @level.hasLocalChanges()  # Don't award achievements when beating level changed in level editor
     state = @session.get('state') ? {}
     options = { showModal: true }
-    if not _.isUndefined(state.capstoneStage) and state.capstoneStage >= @level.capstoneStages
+    if not _.isUndefined(state.capstoneStage)
       options.capstoneVictory = true
-    if @goalManager.checkOverallStatus() is 'success'
+    if @goalManager.finishLevel()
       showModalFn = -> Backbone.Mediator.publish 'level:show-victory', options
       @session.recordScores @world.scores, @level
       if @level.get 'replayable'

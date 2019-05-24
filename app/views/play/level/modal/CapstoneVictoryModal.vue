@@ -2,8 +2,9 @@
   <div>
     <h1>Nice work!</h1>
     For level session: {{this.courseInstanceID}},
-    stage: [{{this.capstoneStage}}/{{this.capstoneStages}}]
-    Next cinematic link: TODO :)
+    stage: {{this.capstoneStage}}
+    <br />
+    Final cinematic link: TODO :)
   </div>
 </template>
 
@@ -16,10 +17,6 @@
         required: true
       },
       capstoneStage: {
-        type: Number,
-        required: true
-      },
-      capstoneStages: {
         type: Number,
         required: true
       }
