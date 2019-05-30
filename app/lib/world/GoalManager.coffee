@@ -98,6 +98,7 @@ module.exports = class GoalManager extends CocoClass
       @goalStates[goalID] = goalState
     @notifyGoalChanges()
 
+  # Adds any goals for the current capstoneStage
   # Returns the current capstoneStage
   addAdditionalGoals: (session, additionalGoals) ->
     state = session.get('state') ? {}
@@ -118,7 +119,7 @@ module.exports = class GoalManager extends CocoClass
   # Checks if the overall goal status is 'success', then progresses
   # capstone goals to the next stage if there are more goals
   finishLevel: ->
-    stageFinished = @goalManager.checkOverallStatus() is 'success'
+    stageFinished = @checkOverallStatus() is 'success'
     if @options.additionalGoals
       @addAdditionalGoals(@options.session, @options.additionalGoals)
 
