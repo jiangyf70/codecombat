@@ -106,14 +106,18 @@ module.exports = class GoalManager extends CocoClass
       state.capstoneStage = 1 # Increase from zero
     else
       state.capstoneStage += 1
-    session.set('state', state)
-    session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
+    goalsAdded = false
     _.forEach(additionalGoals, (stageGoals) =>
       if stageGoals.stage == state.capstoneStage
         _.forEach(stageGoals.goals, (goal) =>
+          goalsAdded = true
           @addGoal(goal)
         )
     )
+    if goalsAdded
+      session.set('state', state)
+      session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
+
     return state.capstoneStage
 
   # Checks if the overall goal status is 'success', then progresses

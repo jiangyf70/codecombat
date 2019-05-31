@@ -47,8 +47,9 @@ CourseVictoryModal = require './modal/CourseVictoryModal'
 PicoCTFVictoryModal = require './modal/PicoCTFVictoryModal'
 HoC2018VictoryModal = require 'views/special_event/HoC2018VictoryModal'
 InfiniteLoopModal = require './modal/InfiniteLoopModal'
-CapstoneProgressModal = require './modal/CapstoneProgressModal'
-CapstoneVictoryModal = require './modal/CapstoneVictoryModal'
+GameDevVictoryModal = require './modal/GameDevVictoryModal'
+#CapstoneProgressModal = require('./modal/CapstoneProgressModal').default
+#CapstoneVictoryModal = require('./modal/CapstoneVictoryModal').default
 LevelSetupManager = require 'lib/LevelSetupManager'
 ContactModal = require 'views/core/ContactModal'
 HintsView = require './HintsView'
@@ -680,9 +681,11 @@ module.exports = class PlayLevelView extends RootView
       options.capstoneStage = @session.capstoneStage
       options.remainingGoals = @goalManager.getRemainingGoals()
       if options.remainingGoals.length > 0
-        ModalClass = CapstoneProgressModal
+#        ModalClass = CapstoneProgressModal
+        ModalClass = GameDevVictoryModal
       else
-        ModalClass = CapstoneVictoryModal
+#        ModalClass = CapstoneVictoryModal
+        ModalClass = GameDevVictoryModal
 
     if @level.get("slug") is "code-play-share" and @level.get('shareable')
       hocModal = new HoC2018VictoryModal({
