@@ -19,7 +19,7 @@ import {
   getSpeakingAnimationAction,
   getSetupMusic,
   getSoundEffects,
-  getHeroDog
+  getHeroPet
 } from '../../../app/schemas/models/selectors/cinematic'
 
 /**
@@ -201,11 +201,11 @@ describe('Cinematic', () => {
       expect(result2).toBeUndefined()
     })
 
-    it('getHeroDog', () => {
-      const result = getHeroDog(shotFixture1)
+    it('getHeroPet', () => {
+      const result = getHeroPet(shotFixture1)
       expect(result).toEqual({ slug: 'hero-dog-slug', thang: { scaleX: 1, scaleY: 2, pos: { x: 2, y: 0 } } })
 
-      const result2 = getHeroDog(shotFixture2)
+      const result2 = getHeroPet(shotFixture2)
       expect(result2).toBeUndefined()
     })
   })
@@ -248,7 +248,7 @@ var shotFixture1 = {
         }
       }
     },
-    heroDogThangType: {
+    heroPetThangType: {
       type: {
         slug: 'hero-dog-slug'
       },
