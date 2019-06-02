@@ -829,9 +829,9 @@ module.exports = class PlayLevelView extends RootView
     return if @level.hasLocalChanges()  # Don't award achievements when beating level changed in level editor
     state = @session.get('state') ? {}
     options = { showModal: true }
-    if not _.isUndefined(state.capstoneStage)
-      options.capstoneVictory = true
     if @goalManager.finishLevel()
+      if state.capstoneStage and @goalManager.getRemainingGoals().length == 0
+        options.capstoneVictory = true
       showModalFn = -> Backbone.Mediator.publish 'level:show-victory', options
       @session.recordScores @world.scores, @level
       if @level.get 'replayable'
