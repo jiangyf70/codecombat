@@ -28,6 +28,13 @@ module.exports = class GoalManager extends CocoClass
     @thangTeams = {}
     @initThangTeams()
     @addGoal goal for goal in @initialGoals if @initialGoals
+    if @options?.additionalGoals and @options?.session
+      state = @options.session.get('state')
+      capstoneStage = state.capstoneStage
+      stages = _.filter(@options.additionalGoals, (ag) -> ag.stage <= capstoneStage)
+      goals = _.map(stages, (stage) -> stage.goals)
+      unwrappedGoals = _.flatten(goals)
+      @addGoal goal for goal in unwrappedGoals
 
   initThangTeams: ->
     return unless @world
