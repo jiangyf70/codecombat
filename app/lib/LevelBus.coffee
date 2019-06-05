@@ -200,7 +200,7 @@ module.exports = class LevelBus extends Bus
 
   onVictory: (e) ->
     return unless @onPoint()
-    return if e and e.capstoneVictory
+    return if e and e.capstoneInProgress
     state = @session.get('state')
     state.complete = true
     @session.set('state', state)

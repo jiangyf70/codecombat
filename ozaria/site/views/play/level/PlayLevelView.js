@@ -1432,7 +1432,7 @@ class PlayLevelView extends RootView {
 
     if (this.goalManager.finishLevel()) {
       if (state && state.capstoneStage && this.goalManager.getRemainingGoals().length === 0) {
-        options.capstoneVictory = true
+        options.capstoneInProgress = true
       }
       const showModalFn = () =>
         Backbone.Mediator.publish('level:show-victory', options)
