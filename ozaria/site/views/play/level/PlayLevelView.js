@@ -46,6 +46,9 @@ const VictoryModal = require('app/views/play/level/modal/VictoryModal')
 const HeroVictoryModal = require('app/views/play/level/modal/HeroVictoryModal')
 const CourseVictoryModal = require('app/views/play/level/modal/CourseVictoryModal')
 const HoC2018VictoryModal = require('views/special_event/HoC2018VictoryModal')
+const GameDevVictoryModal = require('app/views/play/level/modal/GameDevVictoryModal')
+// const CapstoneProgressModal = require('./modal/CapstoneProgressModal')
+// const CapstoneVictoryModal = require('./modal/CapstoneVictoryModal')
 const InfiniteLoopModal = require('app/views/play/level/modal/InfiniteLoopModal')
 const LevelSetupManager = require('lib/LevelSetupManager')
 const ContactModal = require('views/core/ContactModal')
@@ -494,7 +497,10 @@ class PlayLevelView extends RootView {
   }
 
   initGoalManager () {
-    const options = {}
+    const options = {
+      additionalGoals: this.level.get('additionalGoals'),
+      session: this.session
+    }
     if (this.level.get('assessment') === 'cumulative') {
       options.minGoalsToComplete = 1
     }
@@ -1083,10 +1089,13 @@ class PlayLevelView extends RootView {
     if (this.level.hasLocalChanges()) {
       return
     } // Don't award achievements when beating level changed in level editor
+
+    const additionalGoals = this.level.get('additionalGoals')
     if (
       this.level.isType('game-dev') &&
       this.level.get('shareable') &&
-      !options.manual
+      !options.manual &&
+      !additionalGoals
     ) {
       return
     }
@@ -1140,6 +1149,22 @@ class PlayLevelView extends RootView {
       })
       return
     }
+
+    if (additionalGoals) {
+      const state = this.session.get('state')
+      options.capstoneStage = state ? state.capstoneStage : undefined
+      options.remainingGoals = this.goalManager.getRemainingGoals()
+
+      // TODO: Change ModalClass before merging in
+      if (options.remainingGoals.length > 0) {
+        // ModalClass = CapstoneProgressModal
+        ModalClass = GameDevVictoryModal
+      } else {
+        // ModalClass = CapstoneVictoryModal
+        ModalClass = GameDevVictoryModal
+      }
+    }
+
     const victoryModal = new ModalClass(options)
     this.openModalView(victoryModal)
     victoryModal.once('hidden', () => {
@@ -1394,13 +1419,23 @@ class PlayLevelView extends RootView {
     if (this.destroyed) {
       return
     }
+
     Backbone.Mediator.publish('level:set-time', { ratio: 1 })
+
+    // Don't award achievements when beating level changed in level editor
     if (this.level.hasLocalChanges()) {
       return
-    } // Don't award achievements when beating level changed in level editor
-    if (this.goalManager.checkOverallStatus() === 'success') {
+    }
+
+    const options = { showModal: true }
+    const state = this.session.get('state')
+
+    if (this.goalManager.finishLevel()) {
+      if (state && state.capstoneStage && this.goalManager.getRemainingGoals().length === 0) {
+        options.capstoneVictory = true
+      }
       const showModalFn = () =>
-        Backbone.Mediator.publish('level:show-victory', { showModal: true })
+        Backbone.Mediator.publish('level:show-victory', options)
       this.session.recordScores(this.world.scores, this.level)
       if (this.level.get('replayable')) {
         return this.session.increaseDifficulty(showModalFn)
