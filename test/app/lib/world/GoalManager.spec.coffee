@@ -21,13 +21,13 @@ describe('GoalManager', ->
     state: {}
   }
   additionalGoals = [{
-    stage: 1,
+    stage: 2,
     goals: [
       {name: 'Additional Kill Guy', killThangs: ['AdditionalKillGuy1', 'AdditionalKillGuy2'], id: 'additionalkillguy'},
       {name: 'Additional Save Guy', saveThangs: ['AdditionalSaveGuy1', 'AdditionalSaveGuy2'], id: 'additionalsaveguy'}
     ]
   }, {
-    stage: 2,
+    stage: 3,
     goals: [
       {name: 'Additional Kill Guy 2', killThangs: ['AdditionalKillGuy3', 'AdditionalKillGuy4'], id: 'additionalkillguy2'},
     ]
@@ -314,11 +314,11 @@ describe('GoalManager', ->
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(true)
-    expect(session.state.capstoneStage).toBe(1)
+    expect(session.state.capstoneStage).toBe(2)
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(false)
-    expect(session.state.capstoneStage).toBe(1)
+    expect(session.state.capstoneStage).toBe(2)
 
   xit 'handles getToLocation', ->
     gm = new GoalManager()

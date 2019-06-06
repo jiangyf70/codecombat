@@ -110,7 +110,9 @@ module.exports = class GoalManager extends CocoClass
   addAdditionalGoals: (session, additionalGoals) ->
     state = session.get('state') ? {}
     if not state.capstoneStage
-      state.capstoneStage = 1 # Increase from zero
+      # In daily speak, we think of initial goals as stage 1 and additional goals
+      # as stage 2 and above. That is why we are starting from 2.
+      state.capstoneStage = 2
     else
       state.capstoneStage += 1
     goalsAdded = false
