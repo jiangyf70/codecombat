@@ -14,13 +14,11 @@ describe('GoalManager', ->
     save: ->
     set: (event, state) ->
       if state.capstoneStage
-        session.capstoneStage = state.capstoneStage
-    get: -> {
-      goalStates: session.goalStates
-      capstoneStage: session.capstoneStage
-    }
-    goalStates: {}
-    capstoneStage: 0
+        session.state.capstoneStage = state.capstoneStage
+    get: (what) ->
+      if what == 'state'
+        return session.state
+    state: {}
   }
   additionalGoals = [{
     stage: 1,
@@ -39,8 +37,7 @@ describe('GoalManager', ->
   }]
 
   beforeEach ->
-    session.capstoneStage = 0
-    session.goalStates = {}
+    session.state.capstoneStage = 0
 
   it('handles kill goal', ->
     gm = new GoalManager()
@@ -317,11 +314,11 @@ describe('GoalManager', ->
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(true)
-    expect(session.capstoneStage).toBe(1)
+    expect(session.state.capstoneStage).toBe(1)
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(false)
-    expect(session.capstoneStage).toBe(1)
+    expect(session.state.capstoneStage).toBe(1)
 
   xit 'handles getToLocation', ->
     gm = new GoalManager()
