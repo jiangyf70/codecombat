@@ -1427,13 +1427,13 @@ class PlayLevelView extends RootView {
       return
     }
 
-    const options = { showModal: true }
-    const state = this.session.get('state')
-
     if (this.goalManager.finishLevel()) {
-      if (state && state.capstoneStage && this.goalManager.getRemainingGoals().length === 0) {
+      const options = { showModal: true }
+      const state = this.session.get('state')
+      if (state && state.capstoneStage && this.goalManager.getRemainingGoals().length > 0) {
         options.capstoneInProgress = true
       }
+
       const showModalFn = () =>
         Backbone.Mediator.publish('level:show-victory', options)
       this.session.recordScores(this.world.scores, this.level)
