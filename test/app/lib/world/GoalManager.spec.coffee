@@ -37,7 +37,7 @@ describe('GoalManager', ->
   }]
 
   beforeEach ->
-    session.state.capstoneStage = 0
+    session.state = {}
 
   it('handles kill goal', ->
     gm = new GoalManager()
