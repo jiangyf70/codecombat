@@ -307,6 +307,22 @@ describe('GoalManager', ->
     expect(gm.getRemainingGoals().length).toBe(0)
     expect(gm.checkOverallStatus()).toBe('success')
 
+  it 'does not add goals twice for the same stage', ->
+    gm = new GoalManager(null, [saveGoal], {}, {
+      session
+      additionalGoals
+    })
+    gm.worldGenerationWillBegin()
+    gm.worldGenerationEnded()
+
+    stageFinished = gm.finishLevel()
+    expect(stageFinished).toBe(true)
+    expect(session.capstoneStage).toBe(1)
+
+    stageFinished = gm.finishLevel()
+    expect(stageFinished).toBe(false)
+    expect(session.capstoneStage).toBe(1)
+
   xit 'handles getToLocation', ->
     gm = new GoalManager()
     gm.setGoals([getToLocGoal])

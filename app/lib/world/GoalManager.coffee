@@ -117,8 +117,9 @@ module.exports = class GoalManager extends CocoClass
     _.forEach(additionalGoals, (stageGoals) =>
       if stageGoals.stage == state.capstoneStage
         _.forEach(stageGoals.goals, (goal) =>
-          goalsAdded = true
-          @addGoal(goal)
+          if not _.find(@goals, (existingGoal) -> goal.id == existingGoal.id)
+            @addGoal(goal)
+            goalsAdded = true
         )
     )
     if goalsAdded
@@ -131,7 +132,7 @@ module.exports = class GoalManager extends CocoClass
   # capstone goals to the next stage if there are more goals
   finishLevel: ->
     stageFinished = @checkOverallStatus() is 'success'
-    if @options.additionalGoals
+    if @options.additionalGoals and stageFinished
       @addAdditionalGoals(@options.session, @options.additionalGoals)
 
     return stageFinished
