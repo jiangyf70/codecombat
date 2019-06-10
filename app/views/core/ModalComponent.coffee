@@ -8,6 +8,10 @@ module.exports = class ModalComponent extends ModalView
   propsData: null
 
   afterRender: ->
+    console.log('CAPSTONE: in afterRender')
+    console.log(this)
+    console.log(@vueComponent)
+    console.log(@VueComponent)
     if @vueComponent
       @$el.find('#modal-base-flat').replaceWith(@vueComponent.$el)
     else

@@ -8,6 +8,10 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
+
+import CapstoneProgressModal from './modal/CapstoneProgressModal'
+import CapstoneVictoryModal from './modal/CapstoneVictoryModal'
+
 require('app/styles/play/level/level-loading-view.sass')
 require('app/styles/play/level/tome/spell_palette_entry.sass')
 require('app/styles/play/play-level-view.sass')
@@ -46,9 +50,6 @@ const VictoryModal = require('app/views/play/level/modal/VictoryModal')
 const HeroVictoryModal = require('app/views/play/level/modal/HeroVictoryModal')
 const CourseVictoryModal = require('app/views/play/level/modal/CourseVictoryModal')
 const HoC2018VictoryModal = require('views/special_event/HoC2018VictoryModal')
-const GameDevVictoryModal = require('app/views/play/level/modal/GameDevVictoryModal')
-// const CapstoneProgressModal = require('./modal/CapstoneProgressModal')
-// const CapstoneVictoryModal = require('./modal/CapstoneVictoryModal')
 const InfiniteLoopModal = require('app/views/play/level/modal/InfiniteLoopModal')
 const LevelSetupManager = require('lib/LevelSetupManager')
 const ContactModal = require('views/core/ContactModal')
@@ -1154,14 +1155,12 @@ class PlayLevelView extends RootView {
       const state = this.session.get('state')
       options.capstoneStage = state ? state.capstoneStage : undefined
       options.remainingGoals = this.goalManager.getRemainingGoals()
+      options.levelSlug = this.level.get('slug')
 
-      // TODO: Change ModalClass before merging in
       if (options.remainingGoals.length > 0) {
-        // ModalClass = CapstoneProgressModal
-        ModalClass = GameDevVictoryModal
+        ModalClass = CapstoneProgressModal
       } else {
-        // ModalClass = CapstoneVictoryModal
-        ModalClass = GameDevVictoryModal
+        ModalClass = CapstoneVictoryModal
       }
     }
 
