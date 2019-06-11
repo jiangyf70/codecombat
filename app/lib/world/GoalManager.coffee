@@ -114,6 +114,8 @@ module.exports = class GoalManager extends CocoClass
       # as stage 2 and above. That is why we are starting from 2.
       state.capstoneStage = 2
     else
+      # The capstoneStage will eventually end up being 1 above the final
+      # additionalStage, when the entire level has been completed.
       state.capstoneStage += 1
     goalsAdded = false
     _.forEach(additionalGoals, (stageGoals) =>
