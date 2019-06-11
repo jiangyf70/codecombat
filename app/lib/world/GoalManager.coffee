@@ -108,18 +108,18 @@ module.exports = class GoalManager extends CocoClass
   # Adds any goals for the current capstoneStage
   # Returns the current capstoneStage
   addAdditionalGoals: (session, additionalGoals) ->
-    state = session.get('state') ? {}
-    if not state.capstoneStage
+    capstoneStage = (session.get('state') or {}).capstoneStage
+    if not capstoneStage
       # In daily speak, we think of initial goals as stage 1 and additional goals
       # as stage 2 and above. That is why we are starting from 2.
-      state.capstoneStage = 2
+      capstoneStage = 2
     else
       # The capstoneStage will eventually end up being 1 above the final
       # additionalStage, when the entire level has been completed.
-      state.capstoneStage += 1
+      capstoneStage += 1
     goalsAdded = false
     _.forEach(additionalGoals, (stageGoals) =>
-      if stageGoals.stage == state.capstoneStage
+      if stageGoals.stage == capstoneStage
         _.forEach(stageGoals.goals, (goal) =>
           if not _.find(@goals, (existingGoal) -> goal.id == existingGoal.id)
             @addGoal(goal)
@@ -127,10 +127,12 @@ module.exports = class GoalManager extends CocoClass
         )
     )
     if goalsAdded
+      state = session.get('state') ? {}
+      state.capstoneStage = capstoneStage
       session.set('state', state)
       session.save(null, { success: -> }) # Save and move on, we don't have time to wait here
 
-    return state.capstoneStage
+    return capstoneStage
 
   # Checks if the overall goal status is 'success', then progresses
   # capstone goals to the next stage if there are more goals
@@ -314,10 +316,6 @@ module.exports = class GoalManager extends CocoClass
 
   setGoalState: (goalID, status) ->
     state = @goalStates[goalID]
-    if not state
-      console.error('Failed to set goal state, possibly due to capstone stages for non-ozaria play')
-      return
-
     state.status = status
     if overallStatus = @checkOverallStatus true
       matchedGoals = (_.find(@goals, {id: goalID}) for goalID, goalState of @goalStates when goalState.status is overallStatus)
