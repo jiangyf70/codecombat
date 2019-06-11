@@ -1,3 +1,5 @@
+factories = require 'test/app/factories'
+
 describe('GoalManager', ->
   GoalManager = require 'lib/world/GoalManager'
 
@@ -9,17 +11,6 @@ describe('GoalManager', ->
   stayMapGoal =  {name: 'Stay here', keepFromLeavingOffSide: {who: 'Yall'}, id: 'id'}
   getItemGoal = {name: 'Mine', getItem: {who: 'Grabby', itemID: 'Sandwich'}, id: 'id'}
   keepItemGoal = {name: 'Not Yours', keepFromGettingItem: {who: 'Grabby', itemID: 'Sandwich'}, id: 'id'}
-  # Very simple session mocking
-  session = {
-    save: ->
-    set: (event, state) ->
-      if state.capstoneStage
-        session.state.capstoneStage = state.capstoneStage
-    get: (what) ->
-      if what == 'state'
-        return session.state
-    state: {}
-  }
   additionalGoals = [{
     stage: 2,
     goals: [
@@ -35,9 +26,10 @@ describe('GoalManager', ->
     stage: -1,
     goals: [killGoal]
   }]
+  session = null
 
   beforeEach ->
-    session.state = {}
+    session = factories.makeLevelSession({ state: { complete: false }})
 
   it('handles kill goal', ->
     gm = new GoalManager()
@@ -314,11 +306,11 @@ describe('GoalManager', ->
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(true)
-    expect(session.state.capstoneStage).toBe(2)
+    expect(session.get('state').capstoneStage).toBe(2)
 
     stageFinished = gm.finishLevel()
     expect(stageFinished).toBe(false)
-    expect(session.state.capstoneStage).toBe(2)
+    expect(session.get('state').capstoneStage).toBe(2)
 
   xit 'handles getToLocation', ->
     gm = new GoalManager()
