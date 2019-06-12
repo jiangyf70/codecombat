@@ -316,6 +316,10 @@ module.exports = class GoalManager extends CocoClass
 
   setGoalState: (goalID, status) ->
     state = @goalStates[goalID]
+    if not state
+      console.log('Could not set state for goalID ', goalID)
+      return
+
     state.status = status
     if overallStatus = @checkOverallStatus true
       matchedGoals = (_.find(@goals, {id: goalID}) for goalID, goalState of @goalStates when goalState.status is overallStatus)
